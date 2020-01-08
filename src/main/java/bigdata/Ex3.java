@@ -14,7 +14,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 
-public class Ex1_1 {
+public class Ex3 {
 
 	/* 
 	** Fonction trouver sur StackOverflow permettant de calculer différents quartiles. On doit lui passer
@@ -41,7 +41,7 @@ public class Ex1_1 {
 
 	public static void main(String[] args) {
 
-		SparkConf conf = new SparkConf().setAppName("Ex1_1");
+		SparkConf conf = new SparkConf().setAppName("Ex3");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
@@ -54,22 +54,22 @@ public class Ex1_1 {
 				&& k.split(";")[0].equals("start") == false);
 
 		// On ne garde que la duration pour le transformer en JavaDoubleRDD pour récuperer des statistiques
-		JavaDoubleRDD durationDouble = distFile.filter(filter).mapToDouble(k -> Double.valueOf(k.split(";")[2]));
+		JavaDoubleRDD nbJobsDouble = distFile.filter(filter).mapToDouble(k -> Double.valueOf(k.split(";")[6]));
 
 		// Convertit le JavaDoubleRDD en JavaRDD<Double> pour pouvoir utiliser la fonction getPercentiles
-		JavaRDD<Double> durationRDDDouble = durationDouble.map(k -> k);
+		JavaRDD<Double> nbJobsRDDDouble = nbJobsDouble.map(k -> k);
 		
 		/* 
 		** Récupération des statistiques avec le JavaDoubleRDD pour récuperer la moyenne, le minimum, 
 		** le maximum, les quartiles et l'histogramme
 		*/
-		StatCounter sc = durationDouble.stats();
+		StatCounter sc = nbJobsDouble.stats();
 		double[] diffPercentiles = {0.25,0.5,0.75};
-		double[] percentiles = getPercentiles(durationRDDDouble, diffPercentiles, durationDouble.count(), durationDouble.getNumPartitions());
+		double[] percentiles = getPercentiles(nbJobsRDDDouble, diffPercentiles, nbJobsDouble.count(), nbJobsDouble.getNumPartitions());
 		double mean = sc.mean();
 		double min = sc.min();
 		double max = sc.max();
-		Tuple2<double[],long[]> histo = durationDouble.histogram(5);
+		Tuple2<double[],long[]> histo = nbJobsDouble.histogram(5);
 		
 		/*
 		** Stocke les différentes statistiques dans une liste permettant de le convertir en JavaRDD pour pouvoir
@@ -93,10 +93,10 @@ public class Ex1_1 {
 		** et les données de l'histogramme de l'autre
 		*/
 		JavaRDD<Tuple2<String,Double>> statsRDD = context.parallelize(l,1);
-		statsRDD.saveAsTextFile("./project1_1");
+		statsRDD.saveAsTextFile("./project2");
 
 		JavaRDD<Tuple2<Double,Long>> histoRDD = context.parallelize(histogram,1);
-		histoRDD.saveAsTextFile("./projectHisto1_1");
+		histoRDD.saveAsTextFile("./projectHisto2");
 
 		context.close();
 	}

@@ -70,7 +70,7 @@ public class Ex1_3 {
 			JavaDoubleRDD durationDouble = context.parallelizeDoubles(durations);
 
 			// Convertit le JavaDoubleRDD en JavaRDD<Double> pour pouvoir utiliser la fonction getPercentiles
-			JavaRDD<Double> popRDDDouble = durationDouble.map(k -> k);
+			JavaRDD<Double> durationRDDDouble = durationDouble.map(k -> k);
 			
 			/* 
 			** Récupération des statistiques avec le JavaDoubleRDD pour récuperer la moyenne, le minimum, 
@@ -78,7 +78,7 @@ public class Ex1_3 {
 			*/
 			StatCounter sc = durationDouble.stats();
 			double[] diffPercentiles = {0.25,0.5,0.75};
-			double[] percentiles = getPercentiles(popRDDDouble, diffPercentiles, durationDouble.count(), durationDouble.getNumPartitions());
+			double[] percentiles = getPercentiles(durationRDDDouble, diffPercentiles, durationDouble.count(), durationDouble.getNumPartitions());
 			double mean = sc.mean();
 			double min = sc.min();
 			double max = sc.max();
