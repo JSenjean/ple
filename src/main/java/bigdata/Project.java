@@ -33,7 +33,7 @@ public class Project {
 
 		JavaPairRDD<String,Iterable<Double>> nbPatterns = cleanFile.groupByKey();
 
-		JavaRDD<Double> variances = nbPatterns.reduce((k,v) -> v._2().iterator().next().parseDouble(s));
+		//JavaRDD<Double> variances = nbPatterns.reduce((k,v) -> v._2().iterator().next().parseDouble(s));
 
 		JavaDoubleRDD popDouble = distFile.filter(filter).mapToDouble(k -> Double.valueOf(k.split(";")[2]));
 
@@ -42,7 +42,7 @@ public class Project {
 
 		StatCounter sc = popDouble.stats();
 		//System.out.println(sc.variance());
-		//System.out.println(sc.max());
+		//System.out.println(sc.max()); 
 		// JavaRDD<String> res = String.valueOf(sc.variance());
 		List<Double> l = new ArrayList<Double>();
 		l.add(sc.variance());
