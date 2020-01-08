@@ -46,46 +46,57 @@ public class Ex1_1 {
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 
-		// Crée un filtre permettant d'enlever les lignes qui sont idles en détectant les -1
-
+		/* 
+		** Crée un filtre permettant d'enlever les lignes qui sont idles en détectant les -1, en vérifiant 
+		** si le token 5 ne vaut pas -1
+		*/
 		Function<String, Boolean> filter = k -> (k.split(";")[5].equals("-1") == false
 				&& k.split(";")[0].equals("start") == false);
 
 		// On ne garde que la duration pour le transformer en JavaDoubleRDD pour récuperer des statistiques
-		JavaDoubleRDD popDouble = distFile.filter(filter).mapToDouble(k -> Double.valueOf(k.split(";")[2]));
+		JavaDoubleRDD durationDouble = distFile.filter(filter).mapToDouble(k -> Double.valueOf(k.split(";")[2]));
 
 		// Convertit le JavaDoubleRDD en JavaRDD<Double> pour pouvoir utiliser la fonction getPercentiles
-		JavaRDD<Double> popRDDDouble = popDouble.map(k -> k);
+		JavaRDD<Double> popRDDDouble = durationDouble.map(k -> k);
 		
 		/* 
 		** Récupération des statistiques avec le JavaDoubleRDD pour récuperer la moyenne, le minimum, 
 		** le maximum, les quartiles et l'histogramme
 		*/
-		StatCounter sc = popDouble.stats();
+		StatCounter sc = durationDouble.stats();
 		double[] diffPercentiles = {0.25,0.5,0.75};
-		double[] percentiles = getPercentiles(popRDDDouble, diffPercentiles, popDouble.count(), popDouble.getNumPartitions());
+		double[] percentiles = getPercentiles(popRDDDouble, diffPercentiles, durationDouble.count(), durationDouble.getNumPartitions());
 		double mean = sc.mean();
 		double min = sc.min();
 		double max = sc.max();
-		Tuple2<double[],long[]> histo = popDouble.histogram(6);
+		Tuple2<double[],long[]> histo = durationDouble.histogram(5);
 		
 		/*
 		** Stocke les différentes statistiques dans une liste permettant de le convertir en JavaRDD pour pouvoir
 		** l'écrire dans un fichier. 
 		*/
 		List<Tuple2<String,Double>> l = new ArrayList<Tuple2<String,Double>>();
-		l.add(new Tuple2<String,Double>("mean",mean));
-		l.add(new Tuple2<String,Double>("min",min));
-		l.add(new Tuple2<String,Double>("max",max));
-		l.add(new Tuple2<String,Double>("premier quartile",percentiles[0]));
-		l.add(new Tuple2<String,Double>("mediane",percentiles[1]));
-		l.add(new Tuple2<String,Double>("troisième quartile",percentiles[2]));
-		for(int i = 0; i < 6; ++i){
-			l.add(new Tuple2<String,Double>(String.valueOf(histo._1()[i]), Double.valueOf(histo._2()[i])));
-		}
-		JavaRDD<Tuple2<String,Double>> totalLengthRDD = context.parallelize(l);
+		l.add(new Tuple2<String,Double>("moyenne :",mean));
+		l.add(new Tuple2<String,Double>("min :",min));
+		l.add(new Tuple2<String,Double>("max :",max));
+		l.add(new Tuple2<String,Double>("premier quartile :",percentiles[0]));
+		l.add(new Tuple2<String,Double>("mediane :",percentiles[1]));
+		l.add(new Tuple2<String,Double>("troisième quartile :",percentiles[2]));
 
-		totalLengthRDD.saveAsTextFile("./project1_1");
+		List<Tuple2<Double,Long>> histogram = new ArrayList<Tuple2<Double,Long>>();
+		for(int i = 0; i < 5; ++i){
+			histogram.add(new Tuple2<Double,Long>(histo._1()[i], histo._2()[i]));
+		}
+
+		/*
+		** On sépare nos résultats dans 2 fichiers, le premier contient toutes les stats d'un côté
+		** et les données de l'histogramme de l'autre
+		*/
+		JavaRDD<Tuple2<String,Double>> statsRDD = context.parallelize(l,1);
+		statsRDD.saveAsTextFile("./project1_1");
+
+		JavaRDD<Tuple2<Double,Long>> histoRDD = context.parallelize(histogram,1);
+		histoRDD.saveAsTextFile("./projectHisto1_1");
 
 		context.close();
 	}
