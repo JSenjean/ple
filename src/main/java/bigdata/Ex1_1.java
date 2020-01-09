@@ -83,9 +83,9 @@ public class Ex1_1 {
 		l.add(new Tuple2<String,Double>("mediane ",percentiles[1]));
 		l.add(new Tuple2<String,Double>("troisième quartile ",percentiles[2]));
 
-		List<Tuple2<Double,Long>> histogram = new ArrayList<Tuple2<Double,Long>>();
+		List<String> histogram = new ArrayList<>();
 		for(int i = 0; i < 5; ++i){
-			histogram.add(new Tuple2<Double,Long>(histo._1()[i], histo._2()[i]));
+			histogram.add(String.valueOf("Intervalle : " + histo._1()[i]) + " - " + String.valueOf(histo._1()[i+1]) + " : " + String.valueOf(histo._2()[i]));
 		}
 
 		/*
@@ -95,7 +95,7 @@ public class Ex1_1 {
 		JavaRDD<Tuple2<String,Double>> statsRDD = context.parallelize(l,1);
 		statsRDD.saveAsTextFile("./project1_1");
 
-		JavaRDD<Tuple2<Double,Long>> histoRDD = context.parallelize(histogram,1);
+		JavaRDD<String> histoRDD = context.parallelize(histogram,1);
 		histoRDD.saveAsTextFile("./projectHisto1_1");
 
 		context.close();

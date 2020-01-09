@@ -42,7 +42,7 @@ public class Ex4_1 {
 
 	public static void main(String[] args) {
 
-		SparkConf conf = new SparkConf().setAppName("Ex1_3");
+		SparkConf conf = new SparkConf().setAppName("Ex4_1");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
@@ -110,10 +110,10 @@ public class Ex4_1 {
 		** et les données de l'histogramme de l'autre
 		*/
 		JavaRDD<Tuple2<String,Double>> statsRDD = context.parallelize(l,1);
-		statsRDD.saveAsTextFile("./project1_1");
+		statsRDD.saveAsTextFile("./project4_1");
 
 		JavaRDD<Tuple2<Double,Long>> histoRDD = context.parallelize(histogram,1);
-		histoRDD.saveAsTextFile("./projectHisto1_1");
+		histoRDD.saveAsTextFile("./projectHisto4_1");
 
 		context.close();
 	}

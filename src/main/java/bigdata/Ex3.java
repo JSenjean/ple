@@ -93,10 +93,10 @@ public class Ex3 {
 		** et les données de l'histogramme de l'autre
 		*/
 		JavaRDD<Tuple2<String,Double>> statsRDD = context.parallelize(l,1);
-		statsRDD.saveAsTextFile("./project2");
+		statsRDD.saveAsTextFile("./project3");
 
 		JavaRDD<Tuple2<Double,Long>> histoRDD = context.parallelize(histogram,1);
-		histoRDD.saveAsTextFile("./projectHisto2");
+		histoRDD.saveAsTextFile("./projectHisto3");
 
 		context.close();
 	}
