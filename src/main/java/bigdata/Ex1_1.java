@@ -76,12 +76,12 @@ public class Ex1_1 {
 		** l'écrire dans un fichier. 
 		*/
 		List<Tuple2<String,Double>> l = new ArrayList<Tuple2<String,Double>>();
-		l.add(new Tuple2<String,Double>("moyenne :",mean));
-		l.add(new Tuple2<String,Double>("min :",min));
-		l.add(new Tuple2<String,Double>("max :",max));
-		l.add(new Tuple2<String,Double>("premier quartile :",percentiles[0]));
-		l.add(new Tuple2<String,Double>("mediane :",percentiles[1]));
-		l.add(new Tuple2<String,Double>("troisième quartile :",percentiles[2]));
+		l.add(new Tuple2<String,Double>("moyenne ",mean));
+		l.add(new Tuple2<String,Double>("min ",min));
+		l.add(new Tuple2<String,Double>("max ",max));
+		l.add(new Tuple2<String,Double>("premier quartile ",percentiles[0]));
+		l.add(new Tuple2<String,Double>("mediane ",percentiles[1]));
+		l.add(new Tuple2<String,Double>("troisième quartile ",percentiles[2]));
 
 		List<Tuple2<Double,Long>> histogram = new ArrayList<Tuple2<Double,Long>>();
 		for(int i = 0; i < 5; ++i){
