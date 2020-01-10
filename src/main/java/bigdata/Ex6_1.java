@@ -50,7 +50,7 @@ public class Ex6_1 {
 		alonePatternList.forEach(l -> {
 			double totalDuration = 0.0;
 			for(Tuple2<String, Double> tuple : l._2()){
-				totalDuration += tuple._2().doubleValue();
+				totalDuration += tuple._2();
 			}
 			alonePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/alonePatternTotalDuration * 100));
 		});
@@ -80,7 +80,7 @@ public class Ex6_1 {
 		multiplePatternList.forEach(l -> {
 			double totalDuration = 0.0;
 			for(Tuple2<String, Double> tuple : l._2()){
-				totalDuration += tuple._2().doubleValue();
+				totalDuration += tuple._2();
 			}
 			multiplePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/multiplePatternTotalDuration * 100));
 		});

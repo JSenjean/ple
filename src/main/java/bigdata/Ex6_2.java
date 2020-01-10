@@ -53,7 +53,7 @@ public class Ex6_2 {
 		allPatternList.forEach(l -> {
 			double totalDuration = 0.0;
 			for(Tuple2<String, Double> tuple : l._2()){
-				totalDuration += tuple._2().doubleValue();
+				totalDuration += tuple._2();
 			}
 			allPatternsPercent.put(totalDuration/allPatternTotalDuration * 100, l._1());
 			if(allPatternsPercent.size()>10){
