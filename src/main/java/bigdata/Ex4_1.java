@@ -46,8 +46,16 @@ public class Ex4_1 {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
-		Function<String, Boolean> filter = k -> (!k.split(";")[3].equals("-1") && !k.split(";")[0].equals("start"));
+		Function<String, Boolean> filter = k -> {
+			String[] tokens = k.split(";");
+			return !tokens[3].equals("-1") 
+			&& !tokens[0].equals("start");
+		};
 
+		/*
+		** On utilise une flatmap afin d'avoir une ligne par couple job/duration en splittant les lignes avec
+		** plusieurs jobs pour les mettre sur une seule ligne.
+		*/
 		JavaRDD<Tuple2<String, Double>> splitJobs = distFile.filter(filter).flatMap(l -> {
 			String[] tokens = l.split(";");
 			List<Tuple2<String, Double>> list = new ArrayList<Tuple2<String, Double>>();
@@ -63,8 +71,10 @@ public class Ex4_1 {
 			return (list.iterator());
 		});
 
+		// On groupe les lignes par nom de job
 		JavaPairRDD<String, Iterable<Tuple2<String, Double>>> jobsSort = splitJobs.groupBy(l -> l._1());
 
+		// On additionne les durées pour chaque job, et on le transforme en JavaDoubleRDD pour avoir des stats
 		JavaDoubleRDD jobsDurations = jobsSort.mapToDouble(l -> {
 			double totalDuration = 0.0;
 			for(Tuple2<String, Double> tuple : l._2()){

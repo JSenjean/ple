@@ -3,16 +3,12 @@ package bigdata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 
-import scala.Tuple2;
-
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaDoubleRDD;
 
 public class Ex7 {
 
@@ -22,6 +18,7 @@ public class Ex7 {
 
 		SparkConf conf = new SparkConf().setAppName("Ex7");
 		JavaSparkContext context = new JavaSparkContext(conf);
+		context.setLogLevel("WARN");
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 

@@ -50,8 +50,11 @@ public class Ex3 {
 		** Crée un filtre permettant d'enlever les lignes qui sont idles en détectant les -1, en vérifiant 
 		** si le token 5 ne vaut pas -1
 		*/
-		Function<String, Boolean> filter = k -> (k.split(";")[5].equals("-1") == false
-				&& k.split(";")[0].equals("start") == false);
+		Function<String, Boolean> filter = k -> {
+			String[] tokens = k.split(";");
+			return tokens[5].equals("-1") == false
+				&& tokens[0].equals("start") == false;
+			};
 
 		// On ne garde que la duration pour le transformer en JavaDoubleRDD pour récuperer des statistiques
 		JavaDoubleRDD nbJobsDouble = distFile.filter(filter).mapToDouble(k -> Double.valueOf(k.split(";")[6]));

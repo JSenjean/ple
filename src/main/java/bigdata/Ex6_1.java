@@ -21,12 +21,18 @@ public class Ex6_1 {
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 
-		Function<String, Boolean> filterAlone = k -> (k.split(";")[4].equals("1")
-				&& k.split(";")[0].equals("start") == false);
+		Function<String, Boolean> filterAlone = k -> {
+			String[] tokens = k.split(";");
+			return tokens[4].equals("1")
+				&& tokens[0].equals("start") == false;
+			};
 
-		Function<String, Boolean> filterMultiple = k -> (!k.split(";")[4].equals("0") 
-				&& !k.split(";")[4].equals("1") 
-				&& k.split(";")[0].equals("start") == false);
+		Function<String, Boolean> filterMultiple = k -> {
+			String[] tokens = k.split(";");
+			return !tokens[4].equals("0") 
+				&& !tokens[4].equals("1") 
+				&& tokens[0].equals("start") == false;
+			};
 
 		JavaRDD<Tuple2<String,Double>> alonePatterns = distFile.filter(filterAlone).map(l -> {
 			String[] tokens = l.split(";");

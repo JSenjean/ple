@@ -22,8 +22,11 @@ public class Ex6_2 {
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 
-		Function<String, Boolean> filter = k -> (!k.split(";")[4].equals("0") 
-				&& k.split(";")[0].equals("start") == false);
+		Function<String, Boolean> filter = k -> {
+			String[] tokens = k.split(";");
+			return !tokens[4].equals("0") 
+				&& tokens[0].equals("start") == false;
+			};
 
 		JavaRDD<Tuple2<String,Double>> allPatterns = distFile.filter(filter).flatMap(l -> {
 			String[] tokens = l.split(";");

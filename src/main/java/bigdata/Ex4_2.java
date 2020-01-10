@@ -35,7 +35,11 @@ public class Ex4_2 {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
-		Function<String, Boolean> filter = k -> (!k.split(";")[3].equals("-1") && !k.split(";")[0].equals("start"));
+		Function<String, Boolean> filter = k -> {
+			String[] tokens = k.split(";");
+			return !tokens[3].equals("-1") 
+			&& !tokens[0].equals("start");
+		};
 
 		JavaRDD<Tuple2<String, Double>> splitJobs = distFile.filter(filter).flatMap(l -> {
 			String[] tokens = l.split(";");

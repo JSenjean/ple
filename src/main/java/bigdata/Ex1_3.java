@@ -45,8 +45,11 @@ public class Ex1_3 {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
-		Function<String, Boolean> filter = k -> (k.split(";")[4].equals("1") && !k.split(";")[3].equals("-1")
-				&& !k.split(";")[0].equals("start"));
+		Function<String, Boolean> filter = k -> {
+			String[] tokens = k.split(";");
+			return tokens[4].equals("1") && !tokens[3].equals("-1")
+				&& !tokens[0].equals("start");
+			};
 
 		JavaRDD<Tuple2<Integer,Double>> patterns = distFile.filter(filter).map(k -> 
 		new Tuple2<Integer,Double>(Integer.valueOf(k.split(";")[3]),Double.valueOf(k.split(";")[2])));
