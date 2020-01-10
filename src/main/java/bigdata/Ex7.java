@@ -18,7 +18,6 @@ public class Ex7 {
 
 		SparkConf conf = new SparkConf().setAppName("Ex7");
 		JavaSparkContext context = new JavaSparkContext(conf);
-		context.setLogLevel("WARN");
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 
@@ -37,7 +36,7 @@ public class Ex7 {
 
 		Function<String, Boolean> filter = k -> {
 			String[] tokens = k.split(";");
-			if(Integer.valueOf(tokens[4]) < 4){
+			if(tokens[0].equals("start") || Integer.valueOf(tokens[4]) < 4){
 				return false;
 			}
 			String[] patternsName = tokens[3].split(",");
