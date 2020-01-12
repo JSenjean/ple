@@ -14,12 +14,8 @@ import scala.Tuple2;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 
-class SortbyValue implements Comparator<Tuple2<String,Double>>, Serializable
-{ 
+class SortbyValue implements Comparator<Tuple2<String,Double>>, Serializable{ 
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -6371101274324978054L;
 
 	@Override
@@ -65,23 +61,6 @@ public class Ex4_2 {
 			}
 			return new Tuple2<String,Double>(l._1(),Double.valueOf(totalDuration));
 		});
-
-		/*TreeMap<Double,String> jobsTree = new TreeMap<>();
-
-		List<Tuple2<String,Double>> jobsDurationList = jobsDurations.collect();
-
-		jobsDurationList.forEach(l -> {
-			jobsTree.put(l._2(), l._1());
-			if(jobsTree.size() > 10){
-				jobsTree.remove(jobsTree.firstKey());
-			}
-		});
-
-		List<Tuple2<String,Double>> topTenList = new ArrayList<>();
-
-		jobsTree.entrySet().forEach(l -> {
-			topTenList.add(new Tuple2<String,Double>(l.getValue(),l.getKey()));
-		});*/
 
 		List<Tuple2<String,Double>> topTenList = jobsDurations.top(10,new SortbyValue());
 
