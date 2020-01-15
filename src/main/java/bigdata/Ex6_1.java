@@ -21,13 +21,45 @@ public class Ex6_1 {
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 
-		Function<String, Boolean> filterMultipleOrSingle = k -> {
+		Function<String, Boolean> filterAlone = k -> {
 			String[] tokens = k.split(";");
-			return !tokens[4].equals("0") 
+			return tokens[4].equals("1")
 				&& tokens[0].equals("start") == false;
 			};
 
-		JavaRDD<Tuple2<String,Double>> multipleOrSinglePatterns = distFile.filter(filterMultipleOrSingle).flatMap(l -> {
+		Function<String, Boolean> filterMultiple = k -> {
+			String[] tokens = k.split(";");
+			return !tokens[4].equals("0") 
+				&& !tokens[4].equals("1") 
+				&& tokens[0].equals("start") == false;
+			};
+
+		JavaRDD<Tuple2<String,Double>> alonePatterns = distFile.filter(filterAlone).map(l -> {
+			String[] tokens = l.split(";");
+			return new Tuple2<String,Double>(tokens[3],Double.valueOf(tokens[2]));
+		});
+
+		JavaDoubleRDD alonePatternsDouble = alonePatterns.mapToDouble(l -> l._2());
+
+		Double alonePatternTotalDuration = alonePatternsDouble.sum();
+
+		List<Tuple2<String,Iterable<Tuple2<String,Double>>>> alonePatternList = alonePatterns.groupBy(l -> l._1()).collect();
+
+		List<String> alonePatternsPercent = new ArrayList<>();
+
+		alonePatternList.forEach(l -> {
+			double totalDuration = 0.0;
+			for(Tuple2<String, Double> tuple : l._2()){
+				totalDuration += tuple._2();
+			}
+			alonePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/alonePatternTotalDuration * 100));
+		});
+
+		JavaRDD<String> alonePatternRDD = context.parallelize(alonePatternsPercent,1);
+
+		alonePatternRDD.saveAsTextFile("./project6_1_alone_patterns");
+
+		JavaRDD<Tuple2<String,Double>> multiplePatterns = distFile.filter(filterMultiple).flatMap(l -> {
 			String[] tokens = l.split(";");
 			List<Tuple2<String, Double>> list = new ArrayList<Tuple2<String, Double>>();
 			String[] patternList = tokens[3].split(",");
@@ -37,28 +69,27 @@ public class Ex6_1 {
 			return (list.iterator());
 		});
 
-		JavaDoubleRDD multipleOrSinglePatternsDouble = multipleOrSinglePatterns.mapToDouble(l -> l._2());
+		JavaDoubleRDD multiplePatternsDouble = multiplePatterns.mapToDouble(l -> l._2());
 
-		Double multipleOrSinglePatternTotalDuration = multipleOrSinglePatternsDouble.sum();
+		Double multiplePatternTotalDuration = multiplePatternsDouble.sum();
 
-		List<Tuple2<String,Iterable<Tuple2<String,Double>>>> multipleOrSinglePatternList = multipleOrSinglePatterns.groupBy(l -> l._1()).collect();
+		List<Tuple2<String,Iterable<Tuple2<String,Double>>>> multiplePatternList = multiplePatterns.groupBy(l -> l._1()).collect();
 
-		List<String> multipleOrSinglePatternsPercent = new ArrayList<>();
+		List<String> multiplePatternsPercent = new ArrayList<>();
 
-		multipleOrSinglePatternList.forEach(l -> {
+		multiplePatternList.forEach(l -> {
 			double totalDuration = 0.0;
 			for(Tuple2<String, Double> tuple : l._2()){
 				totalDuration += tuple._2();
 			}
-			multipleOrSinglePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/multipleOrSinglePatternTotalDuration * 100));
+			multiplePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/multiplePatternTotalDuration * 100));
 		});
 
-		JavaRDD<String> multipleOrSinglePatternRDD = context.parallelize(multipleOrSinglePatternsPercent,1);
+		JavaRDD<String> multiplePatternRDD = context.parallelize(multiplePatternsPercent,1);
 
-		multipleOrSinglePatternRDD.saveAsTextFile("./project6_1");
+		multiplePatternRDD.saveAsTextFile("./project6_1_multiple_patterns");
 
 		context.close();
 	}
 	
 }
-
