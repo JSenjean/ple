@@ -21,13 +21,13 @@ public class Ex6_1 {
 
 		JavaRDD<String> distFile = context.textFile(args[0]);
 
-		Function<String, Boolean> filterMultiple = k -> {
+		Function<String, Boolean> filterMultipleOrSingle = k -> {
 			String[] tokens = k.split(";");
 			return !tokens[4].equals("0") 
 				&& tokens[0].equals("start") == false;
 			};
 
-		JavaRDD<Tuple2<String,Double>> multiplePatterns = distFile.filter(filterMultiple).flatMap(l -> {
+		JavaRDD<Tuple2<String,Double>> multipleOrSinglePatterns = distFile.filter(filterMultipleOrSingle).flatMap(l -> {
 			String[] tokens = l.split(";");
 			List<Tuple2<String, Double>> list = new ArrayList<Tuple2<String, Double>>();
 			String[] patternList = tokens[3].split(",");
@@ -37,25 +37,25 @@ public class Ex6_1 {
 			return (list.iterator());
 		});
 
-		JavaDoubleRDD multiplePatternsDouble = multiplePatterns.mapToDouble(l -> l._2());
+		JavaDoubleRDD multipleOrSinglePatternsDouble = multipleOrSinglePatterns.mapToDouble(l -> l._2());
 
-		Double multiplePatternTotalDuration = multiplePatternsDouble.sum();
+		Double multipleOrSinglePatternTotalDuration = multipleOrSinglePatternsDouble.sum();
 
-		List<Tuple2<String,Iterable<Tuple2<String,Double>>>> multiplePatternList = multiplePatterns.groupBy(l -> l._1()).collect();
+		List<Tuple2<String,Iterable<Tuple2<String,Double>>>> multipleOrSinglePatternList = multipleOrSinglePatterns.groupBy(l -> l._1()).collect();
 
-		List<String> multiplePatternsPercent = new ArrayList<>();
+		List<String> multipleOrSinglePatternsPercent = new ArrayList<>();
 
-		multiplePatternList.forEach(l -> {
+		multipleOrSinglePatternList.forEach(l -> {
 			double totalDuration = 0.0;
 			for(Tuple2<String, Double> tuple : l._2()){
 				totalDuration += tuple._2();
 			}
-			multiplePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/multiplePatternTotalDuration * 100));
+			multipleOrSinglePatternsPercent.add("Pourcentage du pattern " + l._1() + " : " + String.valueOf(totalDuration/multipleOrSinglePatternTotalDuration * 100));
 		});
 
-		JavaRDD<String> multiplePatternRDD = context.parallelize(multiplePatternsPercent,1);
+		JavaRDD<String> multipleOrSinglePatternRDD = context.parallelize(multipleOrSinglePatternsPercent,1);
 
-		multiplePatternRDD.saveAsTextFile("./project6_1_multiple_patterns");
+		multipleOrSinglePatternRDD.saveAsTextFile("./project6_1");
 
 		context.close();
 	}
